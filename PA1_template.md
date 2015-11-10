@@ -51,12 +51,17 @@ What is the average daily activity pattern?
 
 ```r
 average_steps <- round(aggregate(steps ~ interval, activity_ds, FUN = mean))
+```
+
+
+```r
 plot(unique(activity_ds[, "interval"]), average_steps[, "steps"], type = "l", 
      ylim = c(0, 250), xlab = "Interval [min]", ylab = "Average steps", col = "blue",
      main = "TIme-series of averege steps \n avereged over each day for 5 minute intervals")
 ```
 
-![plot of chunk average daily pattern](figure/average daily pattern-1.png) 
+![plot of chunk plot average](figure/plot average-1.png) 
+
 
 ```r
 subset(average_steps, steps == max(average_steps["steps"]), select = interval, drop = T)
@@ -95,10 +100,15 @@ new_steps <- as.vector(replace(steps, na_activity_index, na_activity_2))
 new_activity <- activity_ds
 new_activity[, "steps"] <- new_steps
 total_steps_2 <- aggregate(steps ~ date, new_activity, FUN = sum)
+```
+
+
+```r
 hist(total_steps$steps, xlab = "Steps per day", main = "Histogram of steps per day", ylim = c(0, 30))
 ```
 
-![plot of chunk missing values](figure/missing values-1.png) 
+![plot of chunk hist](figure/hist-1.png) 
+
 
 ```r
 mean(total_steps_2$steps)
@@ -129,9 +139,13 @@ new_activity[new_activity$date %in% weekday, "date"] <- "weekday"
 new_activity[new_activity$date %in% weekend, "date"] <- "weekend"
 
 steps_weekdays <- aggregate(steps ~ interval + date, new_activity, FUN = mean)
+```
+
+
+```r
 library(ggplot2)
 gg <- ggplot(steps_weekdays, aes(x = interval, y = steps, col = date)) + geom_line()
 gg + theme(legend.position = "none") + facet_grid(date ~ .) 
 ```
 
-![plot of chunk weekdays](figure/weekdays-1.png) 
+![plot of chunk ggplot](figure/ggplot-1.png) 
