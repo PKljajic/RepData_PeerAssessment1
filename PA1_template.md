@@ -14,35 +14,71 @@ output:
   
 Loading and preprocessing the data
   
-```{r read and process, echo = TRUE}
+
+```r
 activity_ds <- read.csv("activity.csv", stringsAsFactors = F, header = T)
 activity_ds[, "date"] <- as.Date(activity_ds[, "date"], "%Y-%m-%d")
 ```
   
 What is mean total number of steps taken per day?
 
-``` {r mean and median, echo = TRUE}
+
+```r
 total_steps <- aggregate(steps ~ date, activity_ds, FUN = sum)
 hist(total_steps[, "steps"],  ylim = c(0, 30), xlab = "Steps in day", main = "Histogram of steps per day")
+```
+
+![plot of chunk mean and median](figure/mean and median-1.png) 
+
+```r
 mean(total_steps[, "steps"])
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(total_steps[, "steps"])
+```
+
+```
+## [1] 10765
 ```
 
 What is the average daily activity pattern?
 
-```{r average daily pattern, echo = TRUE}
+
+```r
 average_steps <- round(aggregate(steps ~ interval, activity_ds, FUN = mean))
 plot(unique(activity_ds[, "interval"]), average_steps[, "steps"], type = "l", 
      ylim = c(0, 250), xlab = "Interval [min]", ylab = "Average steps", col = "blue",
      main = "TIme-series of averege steps \n avereged over each day for 5 minute intervals")
+```
+
+![plot of chunk average daily pattern](figure/average daily pattern-1.png) 
+
+```r
 subset(average_steps, steps == max(average_steps["steps"]), select = interval, drop = T)
+```
+
+```
+## [1] 835
 ```
 
 Imputing missing values
 
-```{r missing values, echo = TRUE}
+
+```r
 na_s <- sum(is.na(activity_ds[, "steps"]))
 na_s
+```
+
+```
+## [1] 2304
+```
+
+```r
 na_activity <- activity_ds[is.na(activity_ds$steps) == T, c("steps", "interval")]
 na_activity_index <- which(is.na(activity_ds$steps == T))
 na_activity_2 <- vector()
@@ -60,13 +96,30 @@ new_activity <- activity_ds
 new_activity[, "steps"] <- new_steps
 total_steps_2 <- aggregate(steps ~ date, new_activity, FUN = sum)
 hist(total_steps$steps, xlab = "Steps per day", main = "Histogram of steps per day", ylim = c(0, 30))
+```
+
+![plot of chunk missing values](figure/missing values-1.png) 
+
+```r
 mean(total_steps_2$steps)
+```
+
+```
+## [1] 10765.64
+```
+
+```r
 median(total_steps_2$steps)
+```
+
+```
+## [1] 10762
 ```
 
 Are there differences in activity patterns between weekdays and weekends?
 
-```{r weekdays, echo = TRUE}
+
+```r
 new_activity$date <- weekdays(new_activity$date, F)
 
 # days are in croatian
@@ -80,3 +133,5 @@ library(ggplot2)
 gg <- ggplot(steps_weekdays, aes(x = interval, y = steps, col = date)) + geom_line()
 gg + theme(legend.position = "none") + facet_grid(date ~ .) 
 ```
+
+![plot of chunk weekdays](figure/weekdays-1.png) 
